@@ -34,7 +34,12 @@
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/conao3/leaf-db.el"))
 
+
 
+(defun leaf-db (spec)
+  "Configure manager for leaf based init.el.
+Pop configure edit window for SPEC."
+  spec)
 
 (provide 'leaf-db)
 
