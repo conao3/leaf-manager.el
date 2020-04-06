@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Version: 0.0.1
 ;; Keywords: convenience leaf
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-db.el
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -27,6 +27,8 @@
 
 
 ;;; Code:
+
+(require 'ppp)
 
 (defgroup leaf-db nil
   "Configure manager for leaf based init.el"
