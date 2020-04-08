@@ -3,7 +3,7 @@
 (source gnu)
 (source melpa)
 
-(package-file "leaf-db.el")
+(package-file "leaf-manager.el")
 
 (development
  (depends-on "cort"))

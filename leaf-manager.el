@@ -1,4 +1,4 @@
-;;; leaf-db.el --- Configure manager for leaf based init.el  -*- lexical-binding: t; -*-
+;;; leaf-manager.el --- Configure manager for leaf based init.el  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Naoya Yamashita
 
@@ -6,7 +6,7 @@
 ;; Version: 0.0.1
 ;; Keywords: convenience leaf
 ;; Package-Requires: ((emacs "25.1") (ppp "2.1"))
-;; URL: https://github.com/conao3/leaf-db.el
+;; URL: https://github.com/conao3/leaf-manager.el
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,15 +30,15 @@
 
 (require 'ppp)
 
-(defgroup leaf-db nil
+(defgroup leaf-manager nil
   "Configure manager for leaf based init.el"
-  :prefix "leaf-db-"
+  :prefix "leaf-manager-"
   :group 'tools
-  :link '(url-link :tag "Github" "https://github.com/conao3/leaf-db.el"))
+  :link '(url-link :tag "Github" "https://github.com/conao3/leaf-manager.el"))
 
-(defcustom leaf-db-file (locate-user-emacs-file "init.el")
+(defcustom leaf-manager-file (locate-user-emacs-file "init.el")
   "Manage target user init.el file path."
-  :group 'leaf-db
+  :group 'leaf-manager
   :type 'string)
 
 
@@ -47,15 +47,15 @@
 
 ;;; Main
 
-(defun leaf-db (spec)
+(defun leaf-manager (spec)
   "Configure manager for leaf based init.el.
 Pop configure edit window for SPEC."
   spec)
 
-(provide 'leaf-db)
+(provide 'leaf-manager)
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; End:
 
-;;; leaf-db.el ends here
+;;; leaf-manager.el ends here

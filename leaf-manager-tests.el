@@ -1,9 +1,9 @@
-;;; leaf-db-tests.el --- Test definitions for leaf-db  -*- lexical-binding: t; -*-
+;;; leaf-manager-tests.el --- Test definitions for leaf-manager  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; URL: https://github.com/conao3/leaf-db.el
+;; URL: https://github.com/conao3/leaf-manager.el
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@
 
 ;;; Commentary:
 
-;; Test definitions for `leaf-db'.
+;; Test definitions for `leaf-manager'.
 
 
 ;;; Code:
 
 (require 'cort)
-(require 'leaf-db)
+(require 'leaf-manager)
 
 (defmacro cort-deftest-with-equal (name form)
   "Return `cort-deftest' compare by `equal' for NAME, FORM.
@@ -48,10 +48,10 @@ Example:
 ;;; test definitions
 
 
-;; (provide 'leaf-db-test)
+;; (provide 'leaf-manager-test)
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; End:
 
-;;; leaf-db-tests.el ends here
+;;; leaf-manager-tests.el ends here

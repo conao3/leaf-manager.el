@@ -3,8 +3,8 @@
 all:
 
 REPO_USER    := conao3
-PACKAGE_NAME := leaf-db
-REPO_NAME    := leaf-db.el
+PACKAGE_NAME := leaf-manager
+REPO_NAME    := leaf-manager.el
 
 EMACS        ?= emacs
 ELS          := $(shell cask files)
