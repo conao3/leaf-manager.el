@@ -36,6 +36,11 @@
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/conao3/leaf-db.el"))
 
+(defcustom leaf-db-file (locate-user-emacs-file "init.el")
+  "Manage target user init.el file path."
+  :group 'leaf-db
+  :type 'string)
+
 
 ;;; Function
 
