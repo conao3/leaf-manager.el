@@ -202,7 +202,8 @@ Process leaf-manager BODY arguments into TABLE."
 (defun leaf-manager--contents (&optional reload)
   "Read `leaf-manager-file' and put values into `leaf-manager--contents'.
 If RELOAD is non-nil, read file even if cache is avairable."
-  (when (or reload (null leaf-manager--contents))
+  (if (and leaf-manager--contents (not reload))
+      leaf-manager--contents
     (let ((table (make-hash-table :test 'eq))
           sexps elm)
       (with-temp-buffer
