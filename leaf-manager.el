@@ -256,7 +256,7 @@ If RELOAD is non-nil, read file even if cache is avairable."
            (l (ppp-sexp-to-string
                `(prog1 'emacs ,@l-body)))
            (L (ppp-sexp-to-string
-               `(leaf 'leaf-manager ,@lm-body :config ,@L-body))))
+               `(leaf 'leaf-manager ,@lm-body :config ,@(or L-body '(nil))))))
       (format-spec
        leaf-manager-template
        `((?l . ,l)
