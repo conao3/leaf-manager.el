@@ -28,6 +28,8 @@
 
 ;;; Code:
 
+(require 'format-spec)
+(require 'subr-x)
 (require 'leaf)
 (require 'ppp)
 
@@ -122,10 +124,10 @@ Optional:
   :group 'leaf-manager
   :type 'string)
 
-(defcustom leaf-manager-template-copyright-to 'auto
+(defcustom leaf-manager-template-copyright-to nil
   "The Copyright year to used in `leaf-manager-template'.
 Value as string use straightly.
-'auto means dynamic year value when output."
+Nil means dynamic year value when output."
   :group 'leaf-manager
   :type 'sexp)
 
@@ -176,6 +178,22 @@ Value is alist
   - BODY is the leaf all value.")
 
 
+;;; Hash table function
+
+(defun leaf-manager--hash-map (fn table)
+  "Apply FN to each key-value pair of hash TABLE values."
+  (let (results)
+    (maphash
+     (lambda (key value)
+       (push (funcall fn key value) results))
+     table)
+    results))
+
+(defun leaf-manager--hash-keys (table)
+  "Return a list of all the keys in TABLE."
+  (leaf-manager--hash-map (lambda (key _value) key) table))
+
+
 ;;; Function
 
 (defun leaf-manager--contents-1 (table body)
@@ -219,6 +237,41 @@ If RELOAD is non-nil, read file even if cache is avairable."
              (push elm sexps)))))
       (setf (alist-get 'body (gethash 'emacs table)) (nreverse sexps))
       (setq leaf-manager--contents table))))
+
+(defvar ppp-tail-newline)
+
+(defun leaf-manager--create-contents-string ()
+  "Create string from `leaf-manager--contents'."
+  (let ((ppp-tail-newline nil))
+    (let* ((l-body  (alist-get 'body (gethash 'emacs leaf-manager--contents)))
+           (lm-body (alist-get 'body (gethash 'leaf-manager leaf-manager--contents)))
+           (L-body  (thread-last leaf-manager--contents
+                      (leaf-manager--hash-keys)
+                      (funcall (lambda (seq)
+                                 (sort seq (lambda (a b)
+                                             (string< (symbol-name a) (symbol-name b))))))
+                      (cl-remove-if (lambda (elm) (memq elm '(emacs leaf-manager))))
+                      (mapcar (lambda (elm)
+                                `(leaf ,elm ,@(alist-get 'body (gethash elm leaf-manager--contents)))))))
+           (l (ppp-sexp-to-string
+               `(prog1 'emacs ,@l-body)))
+           (L (ppp-sexp-to-string
+               `(leaf 'leaf-manager ,@lm-body :config ,@L-body))))
+      (format-spec
+       leaf-manager-template
+       `((?l . ,l)
+         (?L . ,L)
+         (?f . ,leaf-manager-template-feature-name)
+         (?s . ,leaf-manager-template-summary)
+         (?S . ,leaf-manager-template-commentary)
+         (?y . ,leaf-manager-template-copyright-from)
+         (?Y . ,(or leaf-manager-template-copyright-to
+                    (format-time-string "%Y")))
+         (?n . ,leaf-manager-template-copyright-name)
+         (?N . ,leaf-manager-template-author-name)
+         (?M . ,leaf-manager-template-author-email)
+         (?I . ,leaf-manager-template-license)
+         (?v . ,leaf-manager-template-local-variables))))))
 
 
 ;;; Main
