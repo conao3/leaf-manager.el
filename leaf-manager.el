@@ -241,8 +241,6 @@ If RELOAD is non-nil, read file even if cache is avairable."
       (setf (alist-get 'body (gethash 'emacs table)) (nreverse sexps))
       (setq leaf-manager--contents table))))
 
-(defvar ppp-tail-newline)
-
 (defun leaf-manager--create-contents-string ()
   "Create string from `leaf-manager--contents'."
   (let ((ppp-tail-newline nil)
