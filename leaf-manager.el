@@ -490,6 +490,7 @@ If FORCE is non-nil, discard change with no confierm."
 
 (defvar leaf-manager-edit-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-e") #'eval-buffer)
     (define-key map (kbd "C-c C-c") #'leaf-manager-edit-commit)
     (define-key map (kbd "C-c C-k") #'leaf-manager-edit-discard)
     map)
@@ -498,7 +499,7 @@ If FORCE is non-nil, discard change with no confierm."
 (define-derived-mode leaf-manager-edit-mode emacs-lisp-mode "Leaf-manager"
   "Major mode for editing leaf-manager buffer."
   (leaf-manager--set-header-line-format
-   "C-c C-c: Commit your init.el, C-c C-k: Discard"))
+   "C-c C-c: Commit to your init.el, C-c C-e: Eval, C-c C-k: Discard"))
 
 (provide 'leaf-manager)
 
