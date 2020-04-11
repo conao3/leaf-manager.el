@@ -182,10 +182,6 @@ Key is package name as symbol.
 Value is alist
   - BODY is the leaf all value.")
 
-(defvar leaf-manager--contents-dirty nil
-  "The flag whether `leaf-manger--contents' is dirty.
-Dirty state is loaded and editted, but not saved state.")
-
 (defvar leaf-manager-buffer nil
   "The buffer using `leaf-manager'.")
 
@@ -232,12 +228,9 @@ Process leaf-manager BODY arguments into TABLE."
     (setf (alist-get 'body (gethash 'leaf-manager table)) (nreverse sexps)))
   table)
 
-(defun leaf-manager--contents (&optional force)
-  "Read `leaf-manager-file' and put values into `leaf-manager--contents'.
-If FORCE is non-nil, read file even if cache is avairable."
+(defun leaf-manager--contents ()
+  "Read `leaf-manager-file' and put values into `leaf-manager--contents'."
   (when (or (not leaf-manager--contents)
-            (not leaf-manager--contents-dirty)
-            force
             (yes-or-no-p "Cache variable is not saved, discard and reload? "))
     (let ((table (make-hash-table :test 'eq))
           sexps elm)
@@ -256,8 +249,7 @@ If FORCE is non-nil, read file even if cache is avairable."
             (_
              (push elm sexps)))))
       (setf (alist-get 'body (gethash 'emacs table)) (nreverse sexps))
-      (setq leaf-manager--contents table)
-      (setq leaf-manager--contents-dirty nil)))
+      (setq leaf-manager--contents table)))
   leaf-manager--contents)
 
 (defun leaf-manager--create-contents-string ()
@@ -336,12 +328,11 @@ see `magit--add-face-text-property'."
 
 ;;; Main
 
-(defun leaf-manager-load-contents (&optional force)
+(defun leaf-manager-load-contents ()
   "Load `leaf-manager-file' to `leaf-manager--contents'.
-If FORCE is non-nil, load file if `leaf-manager-contents' is dirty state.
 See also `leaf-manager--contents'."
   (interactive)
-  (apply #'leaf-manager--contents force)
+  (apply #'leaf-manager--contents)
   (when (called-interactively-p 'interactive)
     (message "leaf-manager: done!")))
 
@@ -351,20 +342,16 @@ If FORCE is non-nil, write file if file exist."
   (interactive)
   (unless leaf-manager--contents
     (user-error "Manager haven't loaded init.el yet"))
-  (unless leaf-manager--contents-dirty
-    (user-error "No need to write, as it has not been edited yet"))
   (unless (file-writable-p leaf-manager-file)
     (user-error "File (%s) cannot writable" leaf-manager-file))
   (when (and leaf-manager--contents
-             leaf-manager--contents-dirty
              (file-writable-p leaf-manager-file)
              (or (not (file-exists-p leaf-manager-file))
                  force
                  (yes-or-no-p (format "File exist (%s), overwrite? " leaf-manager-file))))
     (prog1 t
       (with-temp-file leaf-manager-file
-        (insert (leaf-manager--create-contents-string)))
-      (setq leaf-manager--contents-dirty nil))))
+        (insert (leaf-manager--create-contents-string))))))
 
 ;;;###autoload
 (defun leaf-manager (pkgs)
