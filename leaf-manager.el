@@ -349,25 +349,22 @@ See also `leaf-manager--contents'."
   "Write `leaf-manager--contents' to `leaf-manager-file'.
 If FORCE is non-nil, write file if file exist."
   (interactive)
-  (when (called-interactively-p 'interactive)
-    (unless leaf-manager--contents
-      (user-error "Manager haven't loaded init.el yet"))
-    (unless leaf-manager--contents-dirty
-      (user-error "No need to write, as it has not been edited yet"))
-    (unless (file-writable-p leaf-manager-file)
-      (user-error "File (%s) cannot writable" leaf-manager-file)))
+  (unless leaf-manager--contents
+    (user-error "Manager haven't loaded init.el yet"))
+  (unless leaf-manager--contents-dirty
+    (user-error "No need to write, as it has not been edited yet"))
+  (unless (file-writable-p leaf-manager-file)
+    (user-error "File (%s) cannot writable" leaf-manager-file))
   (when (and leaf-manager--contents
              leaf-manager--contents-dirty
              (file-writable-p leaf-manager-file)
              (or (not (file-exists-p leaf-manager-file))
                  force
-                 (yes-or-no-p (format "File exist (%s), replace? " leaf-manager-file))))
+                 (yes-or-no-p (format "File exist (%s), overwrite? " leaf-manager-file))))
     (prog1 t
       (with-temp-file leaf-manager-file
         (insert (leaf-manager--create-contents-string)))
-      (setq leaf-manager--contents-dirty nil)
-      (when (called-interactively-p 'interactive)
-        (message "leaf-manager: done!")))))
+      (setq leaf-manager--contents-dirty nil))))
 
 ;;;###autoload
 (defun leaf-manager (pkgs)
@@ -437,7 +434,8 @@ see `leaf-manger--contents'."
         (setf (alist-get 'body (gethash elm saved-contents))
               (alist-get 'body (gethash elm table))))
       (setq leaf-manager--contents saved-contents)))
-  (leaf-manager-write-contents))
+  (leaf-manager-write-contents)
+  (message "Save done! %s" leaf-manager-file))
 
 (defun leaf-manager-edit-discard (&optional force)
   "Discard `leaf-manger-buffer' change.
