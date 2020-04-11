@@ -231,6 +231,9 @@ If RELOAD is non-nil, read file even if cache is avairable."
           (pcase elm
             (`(leaf leaf-manager . ,body)
              (leaf-manager--contents-1 table (leaf-normalize-plist body)))
+            (`(prog1 'emacs . ,body)
+             (dolist (e body)
+               (push e sexps)))
             (`(provide . ,_)
              (ignore))
             (_
