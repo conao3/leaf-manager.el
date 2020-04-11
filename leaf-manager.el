@@ -288,7 +288,7 @@ If RELOAD is non-nil, read file even if cache is avairable."
 If FORCE is non-nil, load file if `leaf-manager-contents' is dirty state.
 See also `leaf-manager--contents'."
   (interactive)
-  (leaf-manager--contents force))
+  (apply #'leaf-manager--contents force))
 
 (defun leaf-manager-write-contents (&optional force)
   "Write `leaf-manager--contents' to `leaf-manager-file'.
