@@ -413,8 +413,38 @@ Pop configure edit window for PKGS."
 
 ;;; Major-mode
 
+(defun leaf-manager-edit-commit ()
+  "Commit `leaf-manger-buffer' change to `leaf-manger-file'.
+see `leaf-manger--contents'."
+  (interactive)
+  (goto-char (point-min))
+  (let ((saved-contents leaf-manager--contents))
+    (setq leaf-manager--contents nil)
+    (let ((table (make-hash-table :test 'eq)) ; copied from `leaf-manger--contents'
+          elm)
+      (with-temp-buffer
+        (insert-file-contents leaf-manager-file)
+        (goto-char (point-min))
+        (while (ignore-errors (setq elm (read (current-buffer))))
+          (pcase elm
+            (`(leaf leaf-manager . ,body)
+             (leaf-manager--contents-1 table (leaf-normalize-plist body)))
+            (_
+             (user-error "Unknown sexp exist.  sexp: %s" elm)))))
+      (setq leaf-manager--contents table))))
+
+(defun leaf-manager-edit-discard (&optional force)
+  "Discard `leaf-manger-buffer' change.
+If FORCE is non-nil, discard change with no confierm."
+  (interactive)
+  (when (or force
+            (yes-or-no-p "Discard changes? "))
+    (kill-buffer leaf-manager-buffer)))
+
 (defvar leaf-manager-edit-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-c") #'leaf-manager-edit-commit)
+    (define-key map (kbd "C-c C-k") #'leaf-manager-edit-discard)
     map)
   "Keymap for `leaf-manager-edit-mode'.")
 
