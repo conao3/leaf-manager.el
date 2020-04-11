@@ -224,8 +224,7 @@ Process leaf-manager BODY arguments into TABLE."
 (defun leaf-manager--contents (&optional reload)
   "Read `leaf-manager-file' and put values into `leaf-manager--contents'.
 If RELOAD is non-nil, read file even if cache is avairable."
-  (if (and leaf-manager--contents (not reload))
-      leaf-manager--contents
+  (when (or (not leaf-manager--contents) reload)
     (let ((table (make-hash-table :test 'eq))
           sexps elm)
       (with-temp-buffer
@@ -244,7 +243,8 @@ If RELOAD is non-nil, read file even if cache is avairable."
              (push elm sexps)))))
       (setf (alist-get 'body (gethash 'emacs table)) (nreverse sexps))
       (setq leaf-manager--contents table)
-      (setq leaf-manager--contents-dirty nil))))
+      (setq leaf-manager--contents-dirty nil)))
+  leaf-manager--contents)
 
 (defun leaf-manager--create-contents-string ()
   "Create string from `leaf-manager--contents'."
