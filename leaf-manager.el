@@ -427,16 +427,17 @@ see `leaf-manger--contents'."
     (setq leaf-manager--contents nil)
     (let ((table (make-hash-table :test 'eq)) ; copied from `leaf-manger--contents'
           elm)
-      (with-temp-buffer
-        (insert-file-contents leaf-manager-file)
-        (goto-char (point-min))
-        (while (ignore-errors (setq elm (read (current-buffer))))
-          (pcase elm
-            (`(leaf leaf-manager . ,body)
-             (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
-            (_
-             (user-error "Unknown sexp exist.  sexp: %s" elm)))))
-      (setq leaf-manager--contents table))))
+      (while (ignore-errors (setq elm (read (current-buffer))))
+        (pcase elm
+          (`(leaf leaf-manager . ,body)
+           (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
+          (_
+           (user-error "Unknown sexp exist.  sexp: %s" elm))))
+      (dolist (elm (leaf-manager--hash-keys table))
+        (setf (alist-get 'body (gethash elm saved-contents))
+              (alist-get 'body (gethash elm table))))
+      (setq leaf-manager--contents saved-contents)))
+  (leaf-manager-write-contents))
 
 (defun leaf-manager-edit-discard (&optional force)
   "Discard `leaf-manger-buffer' change.
