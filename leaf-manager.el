@@ -370,7 +370,7 @@ Pop configure edit window for PKGS."
      (list (let ((allpkg (thread-last (append
                                        '(nil)     ; final element
                                        (mapcar (lambda (elm) (symbol-name (car elm))) package-archive-contents)
-
+                                       (mapcar #'symbol-name (leaf-manager--hash-keys leaf-manager--contents))
                                        ;; see `load-library'
                                        (locate-file-completion-table load-path (get-load-suffixes) "" nil t))
                            (mapcar (lambda (elm) (if (string-suffix-p "/" elm) nil elm)))
