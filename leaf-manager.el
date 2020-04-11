@@ -181,6 +181,9 @@ Value is alist
   "The flag whether `leaf-manger--contents' is dirty.
 Dirty state is loaded and editted, but not saved state.")
 
+(defvar leaf-manager-buffer nil
+  "The buffer using `leaf-manager'.")
+
 
 ;;; Hash table function
 
@@ -343,7 +346,23 @@ Pop configure edit window for PKGS."
              (while (setq elm (intern (completing-read "Package name (to finish, input `nil'): " allpkg)))
                (push elm tmp))
              tmp))))
-  pkgs)
+  (when (or (or (not leaf-manager-buffer)
+                (not (buffer-live-p leaf-manager-buffer)))
+            (progn
+              (pop-to-buffer leaf-manager-buffer)
+              (yes-or-no-p "Now editting, discard? ")))
+    (with-current-buffer (get-buffer-create "*leaf-manager*")
+      (erase-buffer)
+      (insert
+       (ppp-sexp-to-string
+        `(leaf leaf-manager
+           ,@(alist-get 'body (gethash 'leaf-manager leaf-manager--contents))
+           :config
+           ,@(mapcar (lambda (elm)
+                       `(leaf ,elm ,@(alist-get 'body (gethash elm leaf-manager--contents))))
+                     pkgs))))
+      (setq leaf-manager-buffer (current-buffer))
+      (pop-to-buffer (current-buffer)))))
 
 (provide 'leaf-manager)
 
