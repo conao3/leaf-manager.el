@@ -242,7 +242,8 @@ If RELOAD is non-nil, read file even if cache is avairable."
 
 (defun leaf-manager--create-contents-string ()
   "Create string from `leaf-manager--contents'."
-  (let ((ppp-tail-newline nil))
+  (let ((ppp-tail-newline nil)
+        (ppp-escape-newlines nil))
     (let* ((l-body  (alist-get 'body (gethash 'emacs leaf-manager--contents)))
            (lm-body (alist-get 'body (gethash 'leaf-manager leaf-manager--contents)))
            (L-body  (thread-last leaf-manager--contents
