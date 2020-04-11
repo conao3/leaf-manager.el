@@ -224,7 +224,10 @@ Process leaf-manager BODY arguments into TABLE."
 (defun leaf-manager--contents (&optional reload)
   "Read `leaf-manager-file' and put values into `leaf-manager--contents'.
 If RELOAD is non-nil, read file even if cache is avairable."
-  (when (or (not leaf-manager--contents) reload)
+  (when (or (not leaf-manager--contents)
+            (not leaf-manager--contents-dirty)
+            reload
+            (yes-or-no-p "Cache variable is not saved, discard and reload? "))
     (let ((table (make-hash-table :test 'eq))
           sexps elm)
       (with-temp-buffer
@@ -279,6 +282,13 @@ If RELOAD is non-nil, read file even if cache is avairable."
          (?M . ,leaf-manager-template-author-email)
          (?I . ,leaf-manager-template-license)
          (?v . ,leaf-manager-template-local-variables))))))
+
+(defun leaf-manager-load-contents (&optional force)
+  "Load `leaf-manager-file' to `leaf-manager--contents'.
+If FORCE is non-nil, load file if `leaf-manager-contents' is dirty state.
+See also `leaf-manager--contents'."
+  (interactive)
+  (leaf-manager--contents force))
 
 (defun leaf-manager-write-contents (&optional force)
   "Write `leaf-manager--contents' to `leaf-manager-file'.
