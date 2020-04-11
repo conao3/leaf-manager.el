@@ -177,6 +177,10 @@ Key is package name as symbol.
 Value is alist
   - BODY is the leaf all value.")
 
+(defvar leaf-manager--contents-dirty nil
+  "The flag whether `leaf-manger--contents' is dirty.
+Dirty state is loaded and editted, but not saved state.")
+
 
 ;;; Hash table function
 
@@ -239,7 +243,8 @@ If RELOAD is non-nil, read file even if cache is avairable."
             (_
              (push elm sexps)))))
       (setf (alist-get 'body (gethash 'emacs table)) (nreverse sexps))
-      (setq leaf-manager--contents table))))
+      (setq leaf-manager--contents table)
+      (setq leaf-manager--contents-dirty nil))))
 
 (defun leaf-manager--create-contents-string ()
   "Create string from `leaf-manager--contents'."
