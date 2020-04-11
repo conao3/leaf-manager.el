@@ -319,10 +319,31 @@ If FORCE is non-nil, write file if file exist."
       (when (called-interactively-p 'interactive)
         (message "leaf-manager: done!")))))
 
-(defun leaf-manager (spec)
+(defun leaf-manager (pkgs)
   "Configure manager for leaf based init.el.
-Pop configure edit window for SPEC."
-  spec)
+Pop configure edit window for PKGS."
+  (interactive
+   ;; see `package-install'
+   (progn
+     ;; Initialize the package system to get the list of package
+     ;; symbols for completion.
+     (unless package--initialized
+       (package-initialize t))
+     (unless package-archive-contents
+       (package-refresh-contents))
+     (list (let ((allpkg (thread-last (append
+                                       '(nil)     ; final element
+                                       (mapcar (lambda (elm) (symbol-name (car elm))) package-archive-contents)
+
+                                       ;; see `load-library'
+                                       (locate-file-completion-table load-path (get-load-suffixes) "" nil t))
+                           (mapcar (lambda (elm) (if (string-suffix-p "/" elm) nil elm)))
+                           (delete-dups)))
+                 elm tmp)
+             (while (setq elm (intern (completing-read "Package name (to finish, input `nil'): " allpkg)))
+               (push elm tmp))
+             tmp))))
+  pkgs)
 
 (provide 'leaf-manager)
 
