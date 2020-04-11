@@ -170,6 +170,11 @@ Nil means dynamic year value when output."
   :group 'leaf-manager
   :type 'string)
 
+(defface leaf-manger-header-line
+  '((t :inherit warning))
+  "Face for section headings."
+  :group 'leaf-manger)
+
 (defvar leaf-manager--contents nil
   "`leaf-manager-file' contents cache.
 
@@ -286,6 +291,45 @@ If FORCE is non-nil, read file even if cache is avairable."
          (?I . ,leaf-manager-template-license)
          (?v . ,leaf-manager-template-local-variables))))))
 
+(defun leaf-manager--set-header-line-format (string)
+  "Set the header-line using STRING.
+Propertize STRING with the `lefa-manger-header-line'.  If the `face'
+property of any part of STRING is already set, then that takes
+precedence.  Also pad the left and right sides of STRING so that
+it aligns with the text area.
+see `magit-set-header-line-format'."
+  (setq header-line-format
+        (concat
+         (propertize " " 'display '(space :align-to 0))
+         string
+         (propertize " " 'display
+                     `(space :width
+                             (+ left-fringe
+                                left-margin
+                                ,@(and (eq (car (window-current-scroll-bars))
+                                           'left)
+                                       '(scroll-bar)))))))
+  (leaf-manager--add-face-text-property 0 (1- (length header-line-format))
+                                        'leaf-manger-header-line t header-line-format))
+
+(defun leaf-manager--add-face-text-property (beg end face &optional append object)
+  "Like `add-face-text-property' but for `font-lock-face'.
+Argument BEG END FACE APPEND OBJECT are same as `add-face-text-property'.
+see `magit--add-face-text-property'."
+  (cl-loop for pos = (next-single-property-change
+                      beg 'font-lock-face object end)
+           for current = (get-text-property beg 'font-lock-face object)
+           for newface = (if (listp current)
+                             (if append
+                                 (append current (list face))
+                               (cons face current))
+                           (if append
+                               (list current face)
+                             (list face current)))
+           do (progn (put-text-property beg pos 'font-lock-face newface object)
+                     (setq beg pos))
+           while (< beg end)))
+
 
 ;;; Main
 
@@ -372,7 +416,9 @@ Pop configure edit window for PKGS."
   "Keymap for `leaf-manager-edit-mode'.")
 
 (define-derived-mode leaf-manager-edit-mode emacs-lisp-mode "Leaf-manager"
-  "Major mode for editing leaf-manager buffer.")
+  "Major mode for editing leaf-manager buffer."
+  (leaf-manager--set-header-line-format
+   "C-c C-c: Commit your init.el, C-c C-k: Discard"))
 
 (provide 'leaf-manager)
 
