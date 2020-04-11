@@ -387,25 +387,25 @@ Pop configure edit window for PKGS."
               (pop-to-buffer leaf-manager-buffer)
               (yes-or-no-p "Now editting, discard? ")))
     (with-current-buffer (get-buffer-create "*leaf-manager*")
-      (erase-buffer)
-      (insert
-       (ppp-sexp-to-string
-        `(leaf leaf-manager
-           ,@(alist-get 'body (gethash 'leaf-manager leaf-manager--contents))
-           :config
-           ,@(mapcar (lambda (elm)
-                       `(leaf ,elm
-                          ,@(or (and (gethash elm leaf-manager--contents)
-                                     (alist-get 'body (gethash elm leaf-manager--contents)))
-                                (cddr
-                                 (read
-                                  (with-temp-buffer
-                                    (leaf-convert-insert-template elm)
-                                    (buffer-string)))))))
-                     pkgs))))
-      (setq leaf-manager-buffer (current-buffer))
-      (leaf-manager-edit-mode)
-      (pop-to-buffer (current-buffer)))))
+      (let ((standard-output (current-buffer)))
+        (erase-buffer)
+        (ppp-sexp
+         `(leaf leaf-manager
+            ,@(alist-get 'body (gethash 'leaf-manager leaf-manager--contents))
+            :config
+            ,@(mapcar (lambda (elm)
+                        `(leaf ,elm
+                           ,@(or (and (gethash elm leaf-manager--contents)
+                                      (alist-get 'body (gethash elm leaf-manager--contents)))
+                                 (cddr
+                                  (read
+                                   (with-temp-buffer
+                                     (leaf-convert-insert-template elm)
+                                     (buffer-string)))))))
+                      pkgs)))
+        (setq leaf-manager-buffer (current-buffer))
+        (leaf-manager-edit-mode)
+        (pop-to-buffer (current-buffer))))))
 
 
 ;;; Major-mode
