@@ -388,15 +388,24 @@ Pop configure edit window for PKGS."
               (yes-or-no-p "Now editting, discard? ")))
     (with-current-buffer (get-buffer-create "*leaf-manager*")
       (let ((standard-output (current-buffer))
-            (pkgs* (cl-remove-if-not (lambda (elm) (gethash elm leaf-manager--contents)) pkgs)))
+            (existpkgs   (cl-remove-if-not (lambda (elm) (gethash elm leaf-manager--contents)) pkgs))
+            (noexistpkgs (cl-remove-if (lambda (elm) (gethash elm leaf-manager--contents)) pkgs)))
         (erase-buffer)
+        (insert
+         (concat
+          ";; Leaf-manager\n"
+          (format ";; Packages %s\n" pkgs)
+          "\n"
+          (and existpkgs   (format ";; Loaded %s from \"%s\"\n" existpkgs leaf-manager-file))
+          (and noexistpkgs (format ";; Auto generated %s\n" noexistpkgs))
+          "\n"))
         (ppp-sexp
          `(leaf leaf-manager
             ,@(alist-get 'body (gethash 'leaf-manager leaf-manager--contents))
             :config
             ,@(mapcar (lambda (elm)
                         `(leaf ,elm
-                           ,@(if (memq elm pkgs*)
+                           ,@(if (memq elm existpkgs)
                                  (alist-get 'body (gethash elm leaf-manager--contents))
                                (cddr
                                 (read
