@@ -172,6 +172,29 @@ Nil means dynamic year value when output."
   :group 'leaf-manager
   :type 'string)
 
+(defcustom leaf-manager-edit-header-template
+  ";;; leaf-manager
+;; Packages %a
+
+;; Load/Save file: %f
+;; Loaded leaf block: %p
+;; Auto-generated leaf block: %P
+"
+  "The format string used to leaf-manager edit buffer header.
+
+The following %-sequences are supported:
+
+Optional:
+  `%a' The all specified package names.
+
+  `%p' The loaded leaf package names.
+
+  `%P' The auto-generated leaf package names.
+
+  `%f' The string `leaf-manager-file'."
+  :group 'leaf-manager
+  :type 'string)
+
 (defface leaf-manger-header-line
   '((t :inherit warning))
   "Face for section headings."
@@ -288,6 +311,18 @@ Process leaf-manager BODY arguments into TABLE."
          (?I . ,leaf-manager-template-license)
          (?v . ,leaf-manager-template-local-variables))))))
 
+(defun leaf-manager--create-edit-buffer-header (arg)
+  "Create header for leaf-manager edit buffer.
+ARG is alist which contains info.
+Now expect ARG has pkgs, existpkgs, noexistpkgs value."
+  (let-alist arg
+    (format-spec
+     leaf-manager-edit-header-template
+     `((?a . ,(mapconcat #'symbol-name .pkgs ", "))
+       (?p . ,(mapconcat #'symbol-name .existpkgs ", "))
+       (?P . ,(mapconcat #'symbol-name .noexistpkgs ", "))
+       (?f . ,leaf-manager-file)))))
+
 (defun leaf-manager--set-header-line-format (string)
   "Set the header-line using STRING.
 Propertize STRING with the `lefa-manger-header-line'.  If the `face'
@@ -392,13 +427,11 @@ Pop configure edit window for PKGS."
             (noexistpkgs (cl-remove-if (lambda (elm) (gethash elm leaf-manager--contents)) pkgs)))
         (erase-buffer)
         (insert
-         (concat
-          ";; Leaf-manager\n"
-          (format ";; Packages %s\n" pkgs)
-          "\n"
-          (and existpkgs   (format ";; Loaded %s from \"%s\"\n" existpkgs leaf-manager-file))
-          (and noexistpkgs (format ";; Auto generated %s\n" noexistpkgs))
-          "\n"))
+         (let ((alist `((pkgs . ,pkgs)
+                        (existpkgs . ,existpkgs)
+                        (noexistpkgs . ,noexistpkgs))))
+           (leaf-manager--create-edit-buffer-header alist))
+         "\n")
         (ppp-sexp
          `(leaf leaf-manager
             ,@(alist-get 'body (gethash 'leaf-manager leaf-manager--contents))
