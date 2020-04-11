@@ -387,7 +387,8 @@ Pop configure edit window for PKGS."
               (pop-to-buffer leaf-manager-buffer)
               (yes-or-no-p "Now editting, discard? ")))
     (with-current-buffer (get-buffer-create "*leaf-manager*")
-      (let ((standard-output (current-buffer)))
+      (let ((standard-output (current-buffer))
+            (pkgs* (cl-remove-if-not (lambda (elm) (gethash elm leaf-manager--contents)) pkgs)))
         (erase-buffer)
         (ppp-sexp
          `(leaf leaf-manager
@@ -395,13 +396,13 @@ Pop configure edit window for PKGS."
             :config
             ,@(mapcar (lambda (elm)
                         `(leaf ,elm
-                           ,@(or (and (gethash elm leaf-manager--contents)
-                                      (alist-get 'body (gethash elm leaf-manager--contents)))
-                                 (cddr
-                                  (read
-                                   (with-temp-buffer
-                                     (leaf-convert-insert-template elm)
-                                     (buffer-string)))))))
+                           ,@(if (memq elm pkgs*)
+                                 (alist-get 'body (gethash elm leaf-manager--contents))
+                               (cddr
+                                (read
+                                 (with-temp-buffer
+                                   (leaf-convert-insert-template elm)
+                                   (buffer-string)))))))
                       pkgs)))
         (setq leaf-manager-buffer (current-buffer))
         (leaf-manager-edit-mode)
