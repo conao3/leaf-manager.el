@@ -28,6 +28,7 @@
 
 ;;; Code:
 
+(require 'package)
 (require 'format-spec)
 (require 'subr-x)
 (require 'leaf)
