@@ -277,6 +277,20 @@ If RELOAD is non-nil, read file even if cache is avairable."
          (?I . ,leaf-manager-template-license)
          (?v . ,leaf-manager-template-local-variables))))))
 
+(defun leaf-manager-write-contents (&optional force)
+  "Write `leaf-manager--contents' to `leaf-manager-file'.
+If FORCE is non-nil, write file if file exist."
+  (interactive)
+  (when (or (not (file-exists-p leaf-manager-file))
+            force
+            (yes-or-no-p (format "File exist (%s), replace? " leaf-manager-file)))
+    (unless (file-writable-p leaf-manager-file)
+      (error "File (%s) cannot writable" leaf-manager-file))
+    (with-temp-file leaf-manager-file
+      (insert (leaf-manager--create-contents-string)))
+    (when (called-interactively-p 'interactive)
+      (message "leaf-manager: done!"))))
+
 
 ;;; Main
 
