@@ -294,15 +294,25 @@ See also `leaf-manager--contents'."
   "Write `leaf-manager--contents' to `leaf-manager-file'.
 If FORCE is non-nil, write file if file exist."
   (interactive)
-  (when (or (not (file-exists-p leaf-manager-file))
-            force
-            (yes-or-no-p (format "File exist (%s), replace? " leaf-manager-file)))
+  (when (called-interactively-p 'interactive)
+    (unless leaf-manager--contents
+      (user-error "Manager haven't loaded init.el yet"))
+    (unless leaf-manager--contents-dirty
+      (user-error "No need to write, as it has not been edited yet"))
     (unless (file-writable-p leaf-manager-file)
-      (error "File (%s) cannot writable" leaf-manager-file))
-    (with-temp-file leaf-manager-file
-      (insert (leaf-manager--create-contents-string)))
-    (when (called-interactively-p 'interactive)
-      (message "leaf-manager: done!"))))
+      (user-error "File (%s) cannot writable" leaf-manager-file)))
+  (when (and leaf-manager--contents
+             leaf-manager--contents-dirty
+             (file-writable-p leaf-manager-file)
+             (or (not (file-exists-p leaf-manager-file))
+                 force
+                 (yes-or-no-p (format "File exist (%s), replace? " leaf-manager-file))))
+    (prog1 t
+      (with-temp-file leaf-manager-file
+        (insert (leaf-manager--create-contents-string)))
+      (setq leaf-manager--contents-dirty nil)
+      (when (called-interactively-p 'interactive)
+        (message "leaf-manager: done!")))))
 
 
 ;;; Main
