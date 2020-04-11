@@ -221,12 +221,12 @@ Process leaf-manager BODY arguments into TABLE."
                     (error "Leaf-manager :config includes unknown sexp.  sexp: %s" e))))))
     (setf (alist-get 'body (gethash 'leaf-manager table)) (nreverse sexps))))
 
-(defun leaf-manager--contents (&optional reload)
+(defun leaf-manager--contents (&optional force)
   "Read `leaf-manager-file' and put values into `leaf-manager--contents'.
-If RELOAD is non-nil, read file even if cache is avairable."
+If FORCE is non-nil, read file even if cache is avairable."
   (when (or (not leaf-manager--contents)
             (not leaf-manager--contents-dirty)
-            reload
+            force
             (yes-or-no-p "Cache variable is not saved, discard and reload? "))
     (let ((table (make-hash-table :test 'eq))
           sexps elm)
