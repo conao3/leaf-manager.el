@@ -165,7 +165,7 @@ Nil means dynamic year value when output."
 
 (defcustom leaf-manager-template-local-variables
   ";; indent-tabs-mode: nil
-;; read-only-mode: t"
+;; buffer-read-only: t"
   "The local variables specification used in `leaf-manager-template'."
   :group 'leaf-manager
   :type 'string)
