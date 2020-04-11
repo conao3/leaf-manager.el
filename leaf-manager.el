@@ -322,6 +322,7 @@ If FORCE is non-nil, write file if file exist."
       (when (called-interactively-p 'interactive)
         (message "leaf-manager: done!")))))
 
+;;;###autoload
 (defun leaf-manager (pkgs)
   "Configure manager for leaf based init.el.
 Pop configure edit window for PKGS."
