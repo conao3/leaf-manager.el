@@ -499,7 +499,11 @@ If FORCE is non-nil, discard change with no confierm."
 (define-derived-mode leaf-manager-edit-mode emacs-lisp-mode "Leaf-manager"
   "Major mode for editing leaf-manager buffer."
   (leaf-manager--set-header-line-format
-   "C-c C-c: Commit to your init.el, C-c C-e: Eval, C-c C-k: Discard"))
+   (substitute-command-keys
+    "\
+[\\<leaf-manager-edit-mode-map>\\[leaf-manager-edit-commit]] Commit to your init.el, \
+[\\<leaf-manager-edit-mode-map>\\[eval-buffer]] Eval, \
+[\\<leaf-manager-edit-mode-map>\\[leaf-manager-edit-discard]] Discard")))
 
 (provide 'leaf-manager)
 
