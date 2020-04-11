@@ -283,6 +283,9 @@ If FORCE is non-nil, read file even if cache is avairable."
          (?I . ,leaf-manager-template-license)
          (?v . ,leaf-manager-template-local-variables))))))
 
+
+;;; Main
+
 (defun leaf-manager-load-contents (&optional force)
   "Load `leaf-manager-file' to `leaf-manager--contents'.
 If FORCE is non-nil, load file if `leaf-manager-contents' is dirty state.
@@ -315,9 +318,6 @@ If FORCE is non-nil, write file if file exist."
       (setq leaf-manager--contents-dirty nil)
       (when (called-interactively-p 'interactive)
         (message "leaf-manager: done!")))))
-
-
-;;; Main
 
 (defun leaf-manager (spec)
   "Configure manager for leaf based init.el.
