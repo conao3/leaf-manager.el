@@ -362,7 +362,16 @@ Pop configure edit window for PKGS."
                        `(leaf ,elm ,@(alist-get 'body (gethash elm leaf-manager--contents))))
                      pkgs))))
       (setq leaf-manager-buffer (current-buffer))
+      (leaf-manager-edit-mode)
       (pop-to-buffer (current-buffer)))))
+
+(defvar leaf-manager-edit-mode-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for `leaf-manager-edit-mode'.")
+
+(define-derived-mode leaf-manager-edit-mode emacs-lisp-mode "Leaf-manager"
+  "Major mode for editing leaf-manager buffer.")
 
 (provide 'leaf-manager)
 
