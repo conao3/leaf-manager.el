@@ -410,7 +410,7 @@ see `leaf-manger--contents'."
   (goto-char (point-min))
   (let ((saved-contents leaf-manager--contents))
     (setq leaf-manager--contents nil)
-    (let ((table (make-hash-table :test 'eq)) ; copied from `leaf-manger--contents'
+    (let ((table (make-hash-table :test 'eq))   ; see `leaf-manger--contents'
           elm)
       (while (ignore-errors (setq elm (read (current-buffer))))
         (pcase elm
@@ -423,7 +423,7 @@ see `leaf-manger--contents'."
               (alist-get 'body (gethash elm table))))
       (setq leaf-manager--contents saved-contents)))
   (leaf-manager-write-contents)
-  (leaf-manager-edit-discard 'force)          ; kill buffer
+  (leaf-manager-edit-discard 'force)            ; kill buffer
   (message "Save done! %s" leaf-manager-file))
 
 (defun leaf-manager-edit-discard (&optional force)
