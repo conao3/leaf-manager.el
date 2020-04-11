@@ -229,7 +229,8 @@ Process leaf-manager BODY arguments into TABLE."
                     (setf (alist-get 'body (gethash pkg table)) body*))
                    (_
                     (error "Leaf-manager :config includes unknown sexp.  sexp: %s" e))))))
-    (setf (alist-get 'body (gethash 'leaf-manager table)) (nreverse sexps))))
+    (setf (alist-get 'body (gethash 'leaf-manager table)) (nreverse sexps)))
+  table)
 
 (defun leaf-manager--contents (&optional force)
   "Read `leaf-manager-file' and put values into `leaf-manager--contents'.
@@ -246,7 +247,7 @@ If FORCE is non-nil, read file even if cache is avairable."
         (while (ignore-errors (setq elm (read (current-buffer))))
           (pcase elm
             (`(leaf leaf-manager . ,body)
-             (leaf-manager--contents-1 table (leaf-normalize-plist body)))
+             (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
             (`(prog1 'emacs . ,body)
              (dolist (e body)
                (push e sexps)))
@@ -432,7 +433,7 @@ see `leaf-manger--contents'."
         (while (ignore-errors (setq elm (read (current-buffer))))
           (pcase elm
             (`(leaf leaf-manager . ,body)
-             (leaf-manager--contents-1 table (leaf-normalize-plist body)))
+             (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
             (_
              (user-error "Unknown sexp exist.  sexp: %s" elm)))))
       (setq leaf-manager--contents table))))
