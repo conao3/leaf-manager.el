@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Version: 0.0.1
 ;; Keywords: convenience leaf
-;; Package-Requires: ((emacs "25.1") (leaf "4.1") (ppp "2.1"))
+;; Package-Requires: ((emacs "25.1") (leaf "4.1") (leaf-convert "1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-manager.el
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 (require 'format-spec)
 (require 'subr-x)
 (require 'leaf)
+(require 'leaf-convert)
 (require 'ppp)
 
 (defgroup leaf-manager nil
@@ -393,7 +394,14 @@ Pop configure edit window for PKGS."
            ,@(alist-get 'body (gethash 'leaf-manager leaf-manager--contents))
            :config
            ,@(mapcar (lambda (elm)
-                       `(leaf ,elm ,@(alist-get 'body (gethash elm leaf-manager--contents))))
+                       `(leaf ,elm
+                          ,@(or (and (gethash elm leaf-manager--contents)
+                                     (alist-get 'body (gethash elm leaf-manager--contents)))
+                                (cddr
+                                 (read
+                                  (with-temp-buffer
+                                    (leaf-convert-insert-template elm)
+                                    (buffer-string)))))))
                      pkgs))))
       (setq leaf-manager-buffer (current-buffer))
       (leaf-manager-edit-mode)
