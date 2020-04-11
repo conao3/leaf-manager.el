@@ -410,6 +410,9 @@ Pop configure edit window for PKGS."
       (leaf-manager-edit-mode)
       (pop-to-buffer (current-buffer)))))
 
+
+;;; Major-mode
+
 (defvar leaf-manager-edit-mode-map
   (let ((map (make-sparse-keymap)))
     map)
