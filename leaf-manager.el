@@ -189,6 +189,8 @@ Dirty state is loaded and editted, but not saved state.")
 (defvar leaf-manager-buffer nil
   "The buffer using `leaf-manager'.")
 
+(defvar leaf-manager-edit-mode)
+
 
 ;;; Hash table function
 
@@ -417,6 +419,8 @@ Pop configure edit window for PKGS."
   "Commit `leaf-manger-buffer' change to `leaf-manger-file'.
 see `leaf-manger--contents'."
   (interactive)
+  (unless (derived-mode-p 'leaf-manager-edit-mode)
+    (user-error "It doesn't make sense to invoke this in other than `leaf-manager-buffer'"))
   (goto-char (point-min))
   (let ((saved-contents leaf-manager--contents))
     (setq leaf-manager--contents nil)
@@ -437,6 +441,8 @@ see `leaf-manger--contents'."
   "Discard `leaf-manger-buffer' change.
 If FORCE is non-nil, discard change with no confierm."
   (interactive)
+  (unless (derived-mode-p 'leaf-manager-edit-mode)
+    (user-error "It doesn't make sense to invoke this in other than `leaf-manager-buffer'"))
   (when (or force
             (yes-or-no-p "Discard changes? "))
     (kill-buffer leaf-manager-buffer)))
