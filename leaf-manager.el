@@ -256,26 +256,24 @@ Process leaf-manager BODY arguments into TABLE."
 
 (defun leaf-manager--contents ()
   "Read `leaf-manager-file' and put values into `leaf-manager--contents'."
-  (when (or (not leaf-manager--contents)
-            (yes-or-no-p "Cache variable is not saved, discard and reload? "))
-    (let ((table (make-hash-table :test 'eq))
-          sexps elm)
-      (with-temp-buffer
-        (insert-file-contents leaf-manager-file)
-        (goto-char (point-min))
-        (while (ignore-errors (setq elm (read (current-buffer))))
-          (pcase elm
-            (`(leaf leaf-manager . ,body)
-             (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
-            (`(prog1 'emacs . ,body)
-             (dolist (e body)
-               (push e sexps)))
-            (`(provide . ,_)
-             (ignore))
-            (_
-             (push elm sexps)))))
-      (setf (alist-get 'body (gethash 'emacs table)) (nreverse sexps))
-      (setq leaf-manager--contents table)))
+  (let ((table (make-hash-table :test 'eq))
+        sexps elm)
+    (with-temp-buffer
+      (insert-file-contents leaf-manager-file)
+      (goto-char (point-min))
+      (while (ignore-errors (setq elm (read (current-buffer))))
+        (pcase elm
+          (`(leaf leaf-manager . ,body)
+           (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
+          (`(prog1 'emacs . ,body)
+           (dolist (e body)
+             (push e sexps)))
+          (`(provide . ,_)
+           (ignore))
+          (_
+           (push elm sexps)))))
+    (setf (alist-get 'body (gethash 'emacs table)) (nreverse sexps))
+    (setq leaf-manager--contents table))
   leaf-manager--contents)
 
 (defun leaf-manager--create-contents-string ()
