@@ -415,7 +415,7 @@ Pop configure edit window for PKGS."
                  elm tmp)
              (while (setq elm (intern (completing-read "Package name (to finish, input `nil'): " allpkg)))
                (push elm tmp))
-             tmp))))
+             (nreverse tmp)))))
   (when (or (or (not leaf-manager-buffer)
                 (not (buffer-live-p leaf-manager-buffer)))
             (progn
