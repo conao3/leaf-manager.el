@@ -217,12 +217,13 @@ Value is alist
 
 (defun leaf-manager--hash-map (fn table)
   "Apply FN to each key-value pair of hash TABLE values."
-  (let (results)
-    (maphash
-     (lambda (key value)
-       (push (funcall fn key value) results))
-     table)
-    results))
+  (when (hash-table-p table)
+    (let (results)
+      (maphash
+       (lambda (key value)
+         (push (funcall fn key value) results))
+       table)
+      results)))
 
 (defun leaf-manager--hash-keys (table)
   "Return a list of all the keys in TABLE."
