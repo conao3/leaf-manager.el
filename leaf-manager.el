@@ -144,7 +144,7 @@ Nil means dynamic year value when output."
   :type 'string)
 
 (defcustom leaf-manager-template-author-email user-mail-address
-  "The author email used in `leaf-manager-template'."
+  "The author email address used in `leaf-manager-template'."
   :group 'leaf-manager
   :type 'string)
 

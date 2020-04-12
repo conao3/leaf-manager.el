@@ -6,6 +6,7 @@
 [[https://github.com/conao3/leaf-manager.el/releases][https://img.shields.io/github/tag/conao3/leaf-manager.el.svg?style=flat-square]]
 [[https://github.com/conao3/leaf-manager.el/actions][https://github.com/conao3/leaf-manager.el/workflows/Main%20workflow/badge.svg]]
 [[https://app.codacy.com/project/conao3/leaf-manager.el/dashboard][https://img.shields.io/codacy/grade/62a36f4f04524d5e8c758440e8071c45.svg?logo=codacy&style=flat-square]]
+[[https://www.patreon.com/conao3][https://img.shields.io/badge/patreon-become%20a%20patron-orange.svg?logo=patreon&style=flat-square]]
 [[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
 [[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
 
@@ -24,14 +25,41 @@
   - [[#special-thanks][Special Thanks]]
 
 * Description
-Configure manager for leaf based init.el
+Configure manager for ~leaf~ based init.el
+
+[[https://raw.githubusercontent.com/conao3/files/master/blob/leaf-manager.el/leaf-manager.gif]]
 
 * Install
+~leaf-manager~ is available via ~package~.
+
+#+begin_src emacs-lisp
+  (leaf leaf-manager
+    :ensure t)
+#+end_src
 
 * Usage
+~M-x leaf-manager~.
+
+~leaf-manager~ expects multi input.
+If you stop feeding input, please input ~nil~.
 
 * Customize
-
+- leaf-manager-file :: Manage target user init.el file path.
+- leaf-manager-template :: The format string used to output file.
+  - leaf-manager-template-feature-name :: The feature name.
+  - leaf-manager-template-summary :: The summary.
+  - leaf-manager-template-commentary :: The commentary section.
+  - leaf-manager-template-copyright-from :: The Copyright year from.
+  - leaf-manager-template-copyright-to :: The Copyright year to.
+  - leaf-manager-template-copyright-name :: The Copyright name.
+  - leaf-manager-template-author-name :: The author name.
+  - leaf-manager-template-author-email :: The author email address.
+  - leaf-manager-template-license :: The License header.
+  - leaf-manager-template-local-variables :: The local variables specification.
+- leaf-manager-edit-header-template :: The format string used to leaf-manager edit buffer header.
+- face
+  - leaf-manger-header-line :: Face for section headings.
+ 
 * Information
 ** Community
 All feedback and suggestions are welcome!
