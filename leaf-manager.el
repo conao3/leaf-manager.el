@@ -404,6 +404,8 @@ Pop configure edit window for PKGS."
        (package-initialize t))
      (unless package-archive-contents
        (package-refresh-contents))
+     (unless leaf-manager--contents
+       (leaf-manager--contents))
      (list (let ((allpkg (thread-last
                              (append
                               '(nil)     ; final element
