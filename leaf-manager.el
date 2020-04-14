@@ -131,7 +131,7 @@ Optional:
 Value as string use straightly.
 Nil means dynamic year value when output."
   :group 'leaf-manager
-  :type 'sexp)
+  :type '(choice string nil))
 
 (defcustom leaf-manager-template-copyright-name user-full-name
   "The Copyright name used in `leaf-manager-template'."
