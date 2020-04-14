@@ -25,7 +25,7 @@
   - [[#special-thanks][Special Thanks]]
 
 * Description
-Configure manager for ~leaf~ based init.el
+Configuration manager for ~leaf~ based init.el
 
 [[https://raw.githubusercontent.com/conao3/files/master/blob/leaf-manager.el/leaf-manager.gif]]
 

@@ -1,4 +1,4 @@
-;;; leaf-manager.el --- Configure manager for leaf based init.el  -*- lexical-binding: t; -*-
+;;; leaf-manager.el --- Configuration manager for leaf based init.el  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Naoya Yamashita
 
@@ -23,7 +23,7 @@
 
 ;;; Commentary:
 
-;; Interactive folding Elisp code using :tag leaf keyword.
+;; Configuration manager for leaf based init.el
 
 
 ;;; Code:
@@ -36,7 +36,7 @@
 (require 'ppp)
 
 (defgroup leaf-manager nil
-  "Configure manager for leaf based init.el"
+  "Configuration manager for leaf based init.el"
   :prefix "leaf-manager-"
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/conao3/leaf-manager.el"))
@@ -84,7 +84,7 @@ Must:
        They are expanded in (leaf leaf-manager ...)
 
 Optional:
-  `%f' The file feature name.  see `leaf-manager-templater-feature-name'.
+  `%f' The file feature name.  see `leaf-manager-template-feature-name'.
 
   `%s' The init.el summary.  see `leaf-manager-template-summary'.
 
@@ -128,7 +128,7 @@ Optional:
 
 (defcustom leaf-manager-template-copyright-to nil
   "The Copyright year to used in `leaf-manager-template'.
-Value as string use straightly.
+When the value is a string it is used directly.
 Nil means dynamic year value when output."
   :group 'leaf-manager
   :type '(choice string nil))
@@ -195,10 +195,10 @@ Optional:
   :group 'leaf-manager
   :type 'string)
 
-(defface leaf-manger-header-line
+(defface leaf-manager-header-line
   '((t :inherit warning))
   "Face for section headings."
-  :group 'leaf-manger)
+  :group 'leaf-manager)
 
 (defvar leaf-manager--contents nil
   "`leaf-manager-file' contents cache.
@@ -324,7 +324,7 @@ Now expect ARG has pkgs, existpkgs, noexistpkgs value."
 
 (defun leaf-manager--set-header-line-format (string)
   "Set the header-line using STRING.
-Propertize STRING with the `lefa-manger-header-line'.  If the `face'
+Propertize STRING with the `leaf-manager-header-line'.  If the `face'
 property of any part of STRING is already set, then that takes
 precedence.  Also pad the left and right sides of STRING so that
 it aligns with the text area.
@@ -341,7 +341,7 @@ see `magit-set-header-line-format'."
                                            'left)
                                        '(scroll-bar)))))))
   (leaf-manager--add-face-text-property 0 (1- (length header-line-format))
-                                        'leaf-manger-header-line t header-line-format))
+                                        'leaf-manager-header-line t header-line-format))
 
 (defun leaf-manager--add-face-text-property (beg end face &optional append object)
   "Like `add-face-text-property' but for `font-lock-face'.
@@ -379,19 +379,19 @@ If FORCE is non-nil, write file if file exist."
   (unless leaf-manager--contents
     (user-error "Manager haven't loaded init.el yet"))
   (unless (file-writable-p leaf-manager-file)
-    (user-error "File (%s) cannot writable" leaf-manager-file))
+    (user-error "File (%s) cannot be written" leaf-manager-file))
   (when (and leaf-manager--contents
              (file-writable-p leaf-manager-file)
              (or (not (file-exists-p leaf-manager-file))
                  force
-                 (yes-or-no-p (format "File exist (%s), overwrite? " leaf-manager-file))))
+                 (yes-or-no-p (format "File exists (%s), overwrite? " leaf-manager-file))))
     (prog1 t
       (with-temp-file leaf-manager-file
         (insert (leaf-manager--create-contents-string))))))
 
 ;;;###autoload
 (defun leaf-manager (pkgs)
-  "Configure manager for leaf based init.el.
+  "Configuration manager for leaf based init.el.
 Pop configure edit window for PKGS."
   (interactive
    ;; see `package-install'
@@ -420,7 +420,7 @@ Pop configure edit window for PKGS."
                 (not (buffer-live-p leaf-manager-buffer)))
             (progn
               (pop-to-buffer leaf-manager-buffer)
-              (yes-or-no-p "Now editting, discard? ")))
+              (yes-or-no-p "Now editing, discard? ")))
     (with-current-buffer (get-buffer-create "*leaf-manager*")
       (let ((standard-output (current-buffer))
             (existpkgs   (cl-remove-if-not (lambda (elm) (gethash elm leaf-manager--contents)) pkgs))
@@ -454,22 +454,22 @@ Pop configure edit window for PKGS."
 ;;; Major-mode
 
 (defun leaf-manager-edit-commit ()
-  "Commit `leaf-manger-buffer' change to `leaf-manger-file'.
-see `leaf-manger--contents'."
+  "Commit `leaf-manager-buffer' change to `leaf-manager-file'.
+see `leaf-manager--contents'."
   (interactive)
   (unless (derived-mode-p 'leaf-manager-edit-mode)
-    (user-error "It doesn't make sense to invoke this in other than `leaf-manager-buffer'"))
+    (user-error "It doesn't make sense to invoke this except in `leaf-manager-buffer'"))
   (goto-char (point-min))
   (let ((saved-contents leaf-manager--contents))
     (setq leaf-manager--contents nil)
-    (let ((table (make-hash-table :test 'eq))   ; see `leaf-manger--contents'
+    (let ((table (make-hash-table :test 'eq))   ; see `leaf-manager--contents'
           elm)
       (while (ignore-errors (setq elm (read (current-buffer))))
         (pcase elm
           (`(leaf leaf-manager . ,body)
            (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
           (_
-           (user-error "Unknown sexp exist.  sexp: %s" elm))))
+           (user-error "Unknown sexp exists.  sexp: %s" elm))))
       (dolist (elm (leaf-manager--hash-keys table))
         (setf (alist-get 'body (gethash elm saved-contents))
               (alist-get 'body (gethash elm table))))
@@ -479,11 +479,11 @@ see `leaf-manger--contents'."
   (message "Save done! %s" leaf-manager-file))
 
 (defun leaf-manager-edit-discard (&optional force)
-  "Discard `leaf-manger-buffer' change.
-If FORCE is non-nil, discard change with no confierm."
+  "Discard `leaf-manager-buffer' change.
+If FORCE is non-nil, discard change with no confirm."
   (interactive)
   (unless (derived-mode-p 'leaf-manager-edit-mode)
-    (user-error "It doesn't make sense to invoke this in other than `leaf-manager-buffer'"))
+    (user-error "It doesn't make sense to invoke this except in `leaf-manager-buffer'"))
   (when (or force
             (yes-or-no-p "Discard changes? "))
     (kill-buffer leaf-manager-buffer)))
