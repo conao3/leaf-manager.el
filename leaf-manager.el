@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Keywords: convenience leaf
 ;; Package-Requires: ((emacs "26.1") (leaf "4.1") (leaf-convert "1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-manager.el
@@ -40,6 +40,11 @@
   :prefix "leaf-manager-"
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/conao3/leaf-manager.el"))
+
+(defcustom leaf-manager-recursive-edit nil
+  "If non-nil, use `recursive-edit' for `leaf-manager'."
+  :group 'leaf-manager
+  :type 'boolean)
 
 (defcustom leaf-manager-file (locate-user-emacs-file "init.el")
   "Manage target user init.el file path."
@@ -447,8 +452,13 @@ Pop configure edit window for PKGS."
                                    (buffer-string)))))))
                       pkgs)))
         (setq leaf-manager-buffer (current-buffer))
-        (leaf-manager-edit-mode)
-        (pop-to-buffer (current-buffer))))))
+        (leaf-manager-edit-mode)))
+    (if leaf-manager-recursive-edit
+        (save-window-excursion
+          (save-excursion
+            (pop-to-buffer leaf-manager-buffer)
+            (recursive-edit)))
+      (pop-to-buffer leaf-manager-buffer))))
 
 
 ;;; Major-mode
@@ -486,7 +496,9 @@ If FORCE is non-nil, discard change with no confirm."
     (user-error "It doesn't make sense to invoke this except in `leaf-manager-buffer'"))
   (when (or force
             (yes-or-no-p "Discard changes? "))
-    (kill-buffer leaf-manager-buffer)))
+    (kill-buffer leaf-manager-buffer)
+    (when leaf-manager-recursive-edit
+      (exit-recursive-edit))))
 
 (defvar leaf-manager-edit-mode-map
   (let ((map (make-sparse-keymap)))
