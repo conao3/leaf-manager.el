@@ -435,7 +435,7 @@ Pop configure edit window for PKGS."
               (pop-to-buffer leaf-manager-buffer)
               (yes-or-no-p "Now editing, discard? ")))
     (with-current-buffer (get-buffer-create "*leaf-manager*")
-      (let* ((pkgs* (delete-dups (nreverse pkg)))
+      (let* ((pkgs* (delete-dups (nreverse pkgs)))
              (standard-output (current-buffer))
              (existpkgs   (cl-remove-if-not (lambda (elm) (gethash elm leaf-manager--contents)) pkgs*))
              (noexistpkgs (cl-remove-if (lambda (elm) (gethash elm leaf-manager--contents)) pkgs*)))
