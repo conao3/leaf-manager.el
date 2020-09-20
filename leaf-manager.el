@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.0.4
+;; Version: 1.0.5
 ;; Keywords: convenience leaf
 ;; Package-Requires: ((emacs "26.1") (leaf "4.1") (leaf-convert "1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-manager.el
@@ -435,7 +435,7 @@ Pop configure edit window for PKGS."
               (pop-to-buffer leaf-manager-buffer)
               (yes-or-no-p "Now editing, discard? ")))
     (with-current-buffer (get-buffer-create "*leaf-manager*")
-      (let* ((pkgs* (delete-dups (nreverse pkg)))
+      (let* ((pkgs* (delete-dups (nreverse pkgs)))
              (standard-output (current-buffer))
              (existpkgs   (cl-remove-if-not (lambda (elm) (gethash elm leaf-manager--contents)) pkgs*))
              (noexistpkgs (cl-remove-if (lambda (elm) (gethash elm leaf-manager--contents)) pkgs*)))
