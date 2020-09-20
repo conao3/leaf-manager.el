@@ -70,6 +70,8 @@
 
 %L
 
+%F
+
 (provide '%f)
 
 ;; Local Variables:
@@ -87,6 +89,8 @@ Must:
        They are expanded in (prog1 'Emacs ...).
   `%L' The sexps are leaf-manager managed.
        They are expanded in (leaf leaf-manager ...)
+  `%F' The footer sexps are leaf-manager managed.
+       They are expanded in (leaf *leaf-manager-footer ...)
 
 Optional:
   `%f' The file feature name.  see `leaf-manager-template-feature-name'.
@@ -287,22 +291,26 @@ Process leaf-manager BODY arguments into TABLE."
         (ppp-escape-newlines nil))
     (let* ((l-body  (alist-get 'body (gethash 'emacs leaf-manager--contents)))
            (lm-body (alist-get 'body (gethash 'leaf-manager leaf-manager--contents)))
+           (lmf-body (alist-get 'body (gethash '*leaf-manager-footer leaf-manager--contents)))
            (L-body  (thread-last leaf-manager--contents
                       (leaf-manager--hash-keys)
                       (funcall (lambda (seq)
                                  (sort seq (lambda (a b)
                                              (string< (symbol-name a) (symbol-name b))))))
-                      (cl-remove-if (lambda (elm) (memq elm '(emacs leaf-manager))))
+                      (cl-remove-if (lambda (elm) (memq elm '(emacs leaf-manager *leaf-manager-footer))))
                       (mapcar (lambda (elm)
                                 `(leaf ,elm ,@(alist-get 'body (gethash elm leaf-manager--contents)))))))
            (l (ppp-sexp-to-string
                `(prog1 'emacs ,@l-body)))
            (L (ppp-sexp-to-string
-               `(leaf leaf-manager ,@lm-body :config ,@(or L-body '(nil))))))
+               `(leaf leaf-manager ,@lm-body :config ,@(or L-body '(nil)))))
+           (F (ppp-sexp-to-string
+               `(leaf *leaf-manager-footer ,@lmf-body))))
       (format-spec
        leaf-manager-template
        `((?l . ,l)
          (?L . ,L)
+         (?F . ,(if lmf-body F ""))
          (?f . ,leaf-manager-template-feature-name)
          (?s . ,leaf-manager-template-summary)
          (?S . ,leaf-manager-template-commentary)
