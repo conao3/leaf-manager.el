@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
-;; Version: 1.0.4
+;; Version: 1.0.5
 ;; Keywords: convenience leaf
 ;; Package-Requires: ((emacs "26.1") (leaf "4.1") (leaf-convert "1.0") (ppp "2.1"))
 ;; URL: https://github.com/conao3/leaf-manager.el
