@@ -492,9 +492,9 @@ see `leaf-manager--contents'."
         (setf (alist-get 'body (gethash elm saved-contents))
               (alist-get 'body (gethash elm table))))
       (setq leaf-manager--contents saved-contents)))
-  (leaf-manager-write-contents)
-  (leaf-manager-edit-discard 'force)            ; kill buffer
-  (message "Save done! %s" leaf-manager-file))
+  (when (leaf-manager-write-contents)
+    (leaf-manager-edit-discard 'force)            ; kill buffer
+    (message "Save done! %s" leaf-manager-file)))
 
 (defun leaf-manager-edit-discard (&optional force)
   "Discard `leaf-manager-buffer' change.
