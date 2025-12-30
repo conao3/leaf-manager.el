@@ -1,119 +1,98 @@
-#+author: conao3
-#+date: <2020-03-20 Fri>
+#+title: leaf-manager.el
+#+author: Naoya Yamashita
 
 [[https://github.com/conao3/leaf-manager.el][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/leaf-manager.el.png]]
 [[https://github.com/conao3/leaf-manager.el/blob/master/LICENSE][https://img.shields.io/github/license/conao3/leaf-manager.el.svg?style=flat-square]]
 [[https://github.com/conao3/leaf-manager.el/releases][https://img.shields.io/github/tag/conao3/leaf-manager.el.svg?style=flat-square]]
 [[https://github.com/conao3/leaf-manager.el/actions][https://github.com/conao3/leaf-manager.el/workflows/Main%20workflow/badge.svg]]
-[[https://app.codacy.com/project/conao3/leaf-manager.el/dashboard][https://img.shields.io/codacy/grade/62a36f4f04524d5e8c758440e8071c45.svg?logo=codacy&style=flat-square]]
-[[https://www.patreon.com/conao3][https://img.shields.io/badge/patreon-become%20a%20patron-orange.svg?logo=patreon&style=flat-square]]
-[[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
-[[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
 
-* Table of Contents
-- [[#description][Description]]
-- [[#install][Install]]
-- [[#usage][Usage]]
-- [[#customize][Customize]]
-- [[#information][Information]]
-  - [[#community][Community]]
-  - [[#contribution][Contribution]]
-  - [[#migration][Migration]]
-  - [[#license][License]]
-  - [[#author][Author]]
-  - [[#contributors][Contributors]]
-  - [[#special-thanks][Special Thanks]]
+* Overview
 
-* Description
-Configuration manager for ~leaf~ based init.el
+~leaf-manager~ provides an interactive interface for managing your [[https://github.com/conao3/leaf.el][leaf]]-based Emacs configuration. It lets you edit, add, and organize leaf blocks in your init.el through a dedicated buffer with convenient keybindings.
 
 [[https://raw.githubusercontent.com/conao3/files/master/blob/leaf-manager.el/leaf-manager.gif]]
 
-* Install
-~leaf-manager~ is available via ~package~.
+* Requirements
+
+- Emacs 26.1 or later
+- [[https://github.com/conao3/leaf.el][leaf]]
+- [[https://github.com/conao3/leaf-convert.el][leaf-convert]]
+- [[https://github.com/conao3/ppp.el][ppp]]
+
+* Installation
+
+~leaf-manager~ is available on MELPA. Install it with your preferred package manager:
 
 #+begin_src emacs-lisp
-  (leaf leaf-manager
-    :ensure t)
+(leaf leaf-manager
+  :ensure t)
 #+end_src
 
 * Usage
-~M-x leaf-manager~.
 
-~leaf-manager~ expects multi input.
-If you stop feeding input, please input ~nil~.
+Run ~M-x leaf-manager~ and enter the package names you want to configure. When you're finished adding packages, type ~nil~ to complete the selection.
 
-* Customize
-- leaf-manager-file :: Manage target user init.el file path.
-- leaf-manager-template :: The format string used to output file.
-  - leaf-manager-template-feature-name :: The feature name.
-  - leaf-manager-template-summary :: The summary.
-  - leaf-manager-template-commentary :: The commentary section.
-  - leaf-manager-template-copyright-from :: The Copyright year from.
-  - leaf-manager-template-copyright-to :: The Copyright year to.
-  - leaf-manager-template-copyright-name :: The Copyright name.
-  - leaf-manager-template-author-name :: The author name.
-  - leaf-manager-template-author-email :: The author email address.
-  - leaf-manager-template-license :: The License header.
-  - leaf-manager-template-local-variables :: The local variables specification.
-- leaf-manager-edit-header-template :: The format string used to leaf-manager edit buffer header.
-- face
-  - leaf-manger-header-line :: Face for section headings.
- 
-* Information
-** Community
-All feedback and suggestions are welcome!
+A dedicated buffer opens where you can edit the leaf blocks. The buffer provides these keybindings:
 
-You can use github issues, but you can also use [[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][Slack]]
-if you want a more casual conversation.
+| Key       | Action                            |
+|-----------+-----------------------------------|
+| ~C-c C-c~ | Commit changes to your init.el    |
+| ~C-c C-e~ | Evaluate the buffer               |
+| ~C-c C-k~ | Discard changes and close         |
 
-** Contribution
-We welcome PR!
+* Customization
 
-*** Require tools for testing
-- cask
-  - install via brew
-    #+begin_src shell
-      brew install cask
-    #+end_src
+** Core Settings
 
-  - manual install
-    #+begin_src shell
-      cd ~/
-      hub clone cask/cask
-      export PATH="$HOME/.cask/bin:$PATH"
-    #+end_src
+- ~leaf-manager-file~ - Path to your init.el file (default: =~/.emacs.d/init.el=)
+- ~leaf-manager-recursive-edit~ - When non-nil, use recursive editing mode
 
-*** Running test
-Below operation flow is recommended.
-#+begin_src shell
-  make                              # Install git-hooks in local .git
+** Template Variables
 
-  git branch [feature-branch]       # Create branch named [feature-branch]
-  git checkout [feature-branch]     # Checkout branch named [feature-branch]
+Control how leaf-manager generates your init.el:
 
-  # <edit loop>
-  emacs leaf-manager.el             # Edit something you want
+- ~leaf-manager-template~ - The format string for the output file
+- ~leaf-manager-template-feature-name~ - Feature name (default: "init")
+- ~leaf-manager-template-summary~ - File summary
+- ~leaf-manager-template-commentary~ - Commentary section content
+- ~leaf-manager-template-copyright-from~ - Copyright start year
+- ~leaf-manager-template-copyright-to~ - Copyright end year (nil for current year)
+- ~leaf-manager-template-copyright-name~ - Copyright holder name
+- ~leaf-manager-template-author-name~ - Author name
+- ~leaf-manager-template-author-email~ - Author email
+- ~leaf-manager-template-license~ - License header text
+- ~leaf-manager-template-local-variables~ - Local variables specification
 
-  make test                         # Test leaf-manager via multi version Emacs
-  git commit -am "brabra"           # Commit (auto-run test before commit)
-  # </edit loop>
+** Appearance
 
-  hub fork                          # Create fork at GitHub
-  git push [user] [feature-branch]  # Push feature-branch to your fork
-  hub pull-request                  # Create pull-request
-#+end_src
+- ~leaf-manager-header-line~ - Face for the header line in the edit buffer
+- ~leaf-manager-edit-header-template~ - Format string for the edit buffer header
 
-** Migration
+* Contributing
 
-** License
-#+begin_example
-  General Public License Version 3 (GPLv3)
-  Copyright (c) Naoya Yamashita - https://conao3.com
-  https://github.com/conao3/leaf-manager.el/blob/master/LICENSE
-#+end_example
+Contributions are welcome. Please feel free to submit issues and pull requests on GitHub.
 
-** Author
-- Naoya Yamashita ([[https://github.com/conao3][conao3]])
+** Development Setup
 
-** Contributors
+1. Install [[https://github.com/cask/cask][Cask]]:
+   #+begin_src shell
+   # Using Homebrew
+   brew install cask
+
+   # Or manually
+   git clone https://github.com/cask/cask ~/.cask
+   export PATH="$HOME/.cask/bin:$PATH"
+   #+end_src
+
+2. Run the test suite:
+   #+begin_src shell
+   make test
+   #+end_src
+
+* License
+
+GPL-3.0. See [[file:LICENSE][LICENSE]] for details.
+
+* Author
+
+Naoya Yamashita ([[https://github.com/conao3][@conao3]])
