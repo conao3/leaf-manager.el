@@ -47,6 +47,34 @@ Example:
 
 ;;; test definitions
 
+(cort-deftest leaf-manager/read-contents
+  '((:equal
+     (let ((leaf-manager-file (make-temp-file "leaf-manager"))
+           (leaf-manager--contents nil))
+       (unwind-protect
+           (progn
+             (with-temp-file leaf-manager-file
+               (insert "nil\n(setq example t)\n; trailing comment"))
+             (alist-get 'body (gethash 'emacs (leaf-manager--contents))))
+         (delete-file leaf-manager-file)))
+     '(nil (setq example t)))))
+
+(cort-deftest leaf-manager/reject-incomplete-edit
+  '((:eq
+     (let ((leaf-manager--contents (make-hash-table :test 'eq))
+           (write-called nil))
+       (with-temp-buffer
+         (leaf-manager-edit-mode)
+         (insert "(leaf leaf-manager)\n(")
+         (cl-letf (((symbol-function 'leaf-manager-write-contents)
+                    (lambda () (setq write-called t) nil)))
+           (condition-case nil
+               (leaf-manager-edit-commit)
+             (end-of-file
+              (and (not write-called)
+                   (hash-table-p leaf-manager--contents)))))))
+     t)))
+
 
 ;; (provide 'leaf-manager-test)
 

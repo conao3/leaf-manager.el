@@ -266,12 +266,13 @@ Process leaf-manager BODY arguments into TABLE."
 (defun leaf-manager--contents ()
   "Read `leaf-manager-file' and put values into `leaf-manager--contents'."
   (let ((table (make-hash-table :test 'eq))
-        sexps elm)
+        sexps)
     (with-temp-buffer
       (insert-file-contents leaf-manager-file)
       (goto-char (point-min))
-      (while (ignore-errors (setq elm (read (current-buffer))))
-        (pcase elm
+      (set-syntax-table emacs-lisp-mode-syntax-table)
+      (while (progn (forward-comment (point-max)) (not (eobp)))
+        (pcase (read (current-buffer))
           (`(leaf leaf-manager . ,body)
            (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
           (`(prog1 'emacs . ,body)
@@ -279,7 +280,7 @@ Process leaf-manager BODY arguments into TABLE."
              (push e sexps)))
           (`(provide . ,_)
            (ignore))
-          (_
+          (elm
            (push elm sexps)))))
     (setf (alist-get 'body (gethash 'emacs table)) (nreverse sexps))
     (setq leaf-manager--contents table))
@@ -478,20 +479,18 @@ see `leaf-manager--contents'."
   (unless (derived-mode-p 'leaf-manager-edit-mode)
     (user-error "It doesn't make sense to invoke this except in `leaf-manager-buffer'"))
   (goto-char (point-min))
-  (let ((saved-contents leaf-manager--contents))
-    (setq leaf-manager--contents nil)
-    (let ((table (make-hash-table :test 'eq))   ; see `leaf-manager--contents'
-          elm)
-      (while (ignore-errors (setq elm (read (current-buffer))))
-        (pcase elm
-          (`(leaf leaf-manager . ,body)
-           (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
-          (_
-           (user-error "Unknown sexp exists.  sexp: %s" elm))))
-      (dolist (elm (leaf-manager--hash-keys table))
-        (setf (alist-get 'body (gethash elm saved-contents))
-              (alist-get 'body (gethash elm table))))
-      (setq leaf-manager--contents saved-contents)))
+  (let ((table (make-hash-table :test 'eq))   ; see `leaf-manager--contents'
+        elm)
+    (while (progn (forward-comment (point-max)) (not (eobp)))
+      (setq elm (read (current-buffer)))
+      (pcase elm
+        (`(leaf leaf-manager . ,body)
+         (setq table (leaf-manager--contents-1 table (leaf-normalize-plist body))))
+        (_
+         (user-error "Unknown sexp exists.  sexp: %s" elm))))
+    (dolist (elm (leaf-manager--hash-keys table))
+      (setf (alist-get 'body (gethash elm leaf-manager--contents))
+            (alist-get 'body (gethash elm table)))))
   (when (leaf-manager-write-contents)
     (leaf-manager-edit-discard 'force)            ; kill buffer
     (message "Save done! %s" leaf-manager-file)))
